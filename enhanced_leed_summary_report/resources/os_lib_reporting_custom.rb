@@ -45,56 +45,6 @@ module OsLib_Reporting
 
 # define each section
 
-  def self.experiment1_section(model, sqlFile, runner, name_only = false)
-    # array to hold tables
-    tables = []
-
-    # gather data for section
-    @exp_sect = {}
-    @exp_sect[:title] = 'LEED Expanded Summary Part 1'
-    @exp_sect[:tables] = tables
-
-    # stop here if only name is requested this is used to populate display name for arguments
-    if name_only == true
-      return @exp_sect
-    end
-
-    # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment1_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_Sect11A_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_GenInfoGeneral_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_GenInfoEnergyModelInfo_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_ScheduleEFLH_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_ScheduleSetPts_table(model, sqlFile, runner)
-
-    return @exp_sect
-  end
-
-  def self.experiment2_section(model, sqlFile, runner, name_only = false)
-    # array to hold tables
-    tables = []
-
-    # gather data for section
-    @exp_sect = {}
-    @exp_sect[:title] = 'LEED Expanded Summary Part 2'
-    @exp_sect[:tables] = tables
-
-    # stop here if only name is requested this is used to populate display name for arguments
-    if name_only == true
-      return @exp_sect
-    end
-
-    # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment2_OpaqueAssemblies_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_OpaqueAssemblies2_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_WallGlazeArea_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_RoofSkyliteArea_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_IntLite_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_ExtLite_table(model, sqlFile, runner)
-
-    return @exp_sect
-  end
-
   def self.general_information_section(model, sqlFile, runner, name_only = false)
     # array to hold tables
     tables = []
@@ -110,8 +60,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment1_GenInfoGeneral_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_GenInfoEnergyModelInfo_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.general_information_general_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.general_information_energyModelInfo_table(model, sqlFile, runner)
 
     return @geninfo_sect
   end
@@ -131,8 +81,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment1_ScheduleEFLH_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment1_ScheduleSetPts_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.schedules_EFLH_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.schedules_SetPts_table(model, sqlFile, runner)
 
     return @schedules_sect
   end
@@ -173,8 +123,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment2_OpaqueAssemblies_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_OpaqueAssemblies2_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.opaque_assemblies_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.opaque_assemblies2_table(model, sqlFile, runner)
 
     return @opaque_sect
   end
@@ -194,8 +144,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment2_WallGlazeArea_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_RoofSkyliteArea_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.fene_wallGlazeArea_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.fene_roofSkyliteArea_table(model, sqlFile, runner)
 
     return @fene_sect
   end
@@ -215,8 +165,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment2_IntLite_table(model, sqlFile, runner)
-    tables << OsLib_Reporting.experiment2_ExtLite_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.lighting_intLite_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.lighting_extLite_table(model, sqlFile, runner)
 
     return @lite_sect
   end
@@ -438,7 +388,7 @@ module OsLib_Reporting
   end
 
 
-  def self.experiment1_GenInfoGeneral_table(model, sqlFile, runner)
+  def self.general_information_general_table(model, sqlFile, runner)
     # create a second table
     template_table = {}
     template_table[:title] = 'General Information - General'
@@ -495,7 +445,7 @@ module OsLib_Reporting
     return template_table
   end
 
-  def self.experiment1_GenInfoEnergyModelInfo_table(model, sqlFile, runner)
+  def self.general_information_energyModelInfo_table(model, sqlFile, runner)
     # create a second table
     template_table = {}
     template_table[:title] = 'General Information - Energy Model Information'
@@ -542,7 +492,7 @@ module OsLib_Reporting
     return template_table
   end
 
-  def self.experiment1_ScheduleEFLH_table(model, sqlFile, runner)
+  def self.schedules_EFLH_table(model, sqlFile, runner)
     # create a second table
     template_table = {}
     template_table[:title] = 'Schedules-EFLH (Schedule Type=Fraction)'
@@ -556,9 +506,7 @@ module OsLib_Reporting
     return template_table
   end
 
-
-
-  def self.experiment1_ScheduleSetPts_table(model, sqlFile, runner)
+  def self.schedules_SetPts_table(model, sqlFile, runner)
 
     # data for query
     report_name = 'LEEDsummary'
@@ -594,7 +542,7 @@ module OsLib_Reporting
 
   end
 
-  def self.experiment2_OpaqueAssemblies_table(model, sqlFile, runner)
+  def self.opaque_assemblies_table(model, sqlFile, runner)
 
     # data for query
     report_name = 'EnvelopeSummary'
@@ -642,7 +590,7 @@ module OsLib_Reporting
 
   end
 
-  def self.experiment2_OpaqueAssemblies2_table(model, sqlFile, runner)
+  def self.opaque_assemblies2_table(model, sqlFile, runner)
 
     # data for query
     report_name = 'EnvelopeSummary'
@@ -694,7 +642,7 @@ module OsLib_Reporting
   end
 
 
-  def self.experiment2_WallGlazeArea_table(model, sqlFile, runner)
+  def self.fene_wallGlazeArea_table(model, sqlFile, runner)
 
     #note that column and row are transposed from the original so the variable names can seem a little messed up
 
@@ -740,7 +688,7 @@ module OsLib_Reporting
 
   end
 
-  def self.experiment2_RoofSkyliteArea_table(model, sqlFile, runner)
+  def self.fene_roofSkyliteArea_table(model, sqlFile, runner)
 
     #note that column and row are transposed from the original so the variable names can seem a little messed up
 
@@ -787,7 +735,7 @@ module OsLib_Reporting
   end
 
 
-  def self.experiment2_IntLite_table(model, sqlFile, runner)
+  def self.lighting_intLite_table(model, sqlFile, runner)
 
     # data for query
     report_name = 'LightingSummary'
@@ -839,7 +787,7 @@ module OsLib_Reporting
 
   end
 
-  def self.experiment2_ExtLite_table(model, sqlFile, runner)
+  def self.lighting_extLite_table(model, sqlFile, runner)
 
     # data for query
     report_name = 'LightingSummary'
