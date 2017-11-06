@@ -35,9 +35,6 @@ class EnhancedLEEDSummaryReport < OpenStudio::Ruleset::ReportingUserScript
     result << "airside_section"
     result << "waterside_section"
     result << "perf_out_section"
-    
-    result << "experiment1_section"
-    result << "experiment2_section"
 
     result
   end

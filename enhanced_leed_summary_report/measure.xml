@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>enhanced_leed_summary_report</name>
   <uid>e11cd61d-e007-43a1-97d6-ebeeaf5d8616</uid>
-  <version_id>1ce16d1e-183c-456c-a90f-73db9e90d30a</version_id>
-  <version_modified>20171024T145511Z</version_modified>
+  <version_id>170ddcc6-604d-4ee0-9ff6-bd48657e6c00</version_id>
+  <version_modified>20171027T132732Z</version_modified>
   <xml_checksum>38A068DF</xml_checksum>
   <class_name>EnhancedLEEDSummaryReport</class_name>
   <display_name>Enhanced LEED Summary Report</display_name>
@@ -208,42 +208,6 @@
         </choice>
       </choices>
     </argument>
-    <argument>
-      <name>experiment1_section</name>
-      <display_name>LEED Expanded Summary Part 1</display_name>
-      <type>Boolean</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>true</default_value>
-      <choices>
-        <choice>
-          <value>true</value>
-          <display_name>true</display_name>
-        </choice>
-        <choice>
-          <value>false</value>
-          <display_name>false</display_name>
-        </choice>
-      </choices>
-    </argument>
-    <argument>
-      <name>experiment2_section</name>
-      <display_name>LEED Expanded Summary Part 2</display_name>
-      <type>Boolean</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>true</default_value>
-      <choices>
-        <choice>
-          <value>true</value>
-          <display_name>true</display_name>
-        </choice>
-        <choice>
-          <value>false</value>
-          <display_name>false</display_name>
-        </choice>
-      </choices>
-    </argument>
   </arguments>
   <outputs/>
   <provenances/>
@@ -374,6 +338,18 @@
       <checksum>630C80D9</checksum>
     </file>
     <file>
+      <filename>os_lib_reporting_custom.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>FD4441C7</checksum>
+    </file>
+    <file>
+      <filename>os_lib_reporting_custom.rb.bak</filename>
+      <filetype>bak</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>9C37038F</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.7.5</identifier>
@@ -382,19 +358,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>AFA9E138</checksum>
-    </file>
-    <file>
-      <filename>os_lib_reporting_custom.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>09C02F5A</checksum>
-    </file>
-    <file>
-      <filename>os_lib_reporting_custom.rb.bak</filename>
-      <filetype>bak</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>A8B39EE3</checksum>
+      <checksum>DB1C63A6</checksum>
     </file>
   </files>
 </measure>
