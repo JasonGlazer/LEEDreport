@@ -7,19 +7,26 @@ require_relative '../measure.rb'
 require 'fileutils'
 
 class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
-  # class level variable
-  @@co = OpenStudio::Runmanager::ConfigOptions.new(true)
 
-  def model_in_path
-    "#{File.dirname(__FILE__)}/ExampleModel.osm"
+  def is_openstudio_2?
+    begin
+      workflow = OpenStudio::WorkflowJSON.new
+    rescue
+      return false
+    end
+    return true
   end
 
-  def epw_path
-    # make sure we have a weather data location
-    epw = OpenStudio::Path.new(File.dirname(__FILE__)) / OpenStudio::Path.new('USA_CO_Golden-NREL.724666_TMY3.epw')
-    assert(File.exist?(epw.to_s))
+  def model_in_path_default
+    return "#{File.dirname(__FILE__)}/ExampleModel.osm"
+  end
 
-    epw.to_s
+  def epw_path_default
+    # make sure we have a weather data location
+    epw = nil
+    epw = OpenStudio::Path.new("#{File.dirname(__FILE__)}/USA_CO_Golden-NREL.724666_TMY3.epw")
+    assert(File.exist?(epw.to_s))
+    return epw.to_s
   end
 
   def run_dir(test_name)
@@ -28,26 +35,71 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
   end
 
   def model_out_path(test_name)
-    "#{run_dir(test_name)}/ExampleModel.osm"
+    "#{run_dir(test_name)}/TestOutput.osm"
   end
 
   def workspace_path(test_name)
-    "#{run_dir(test_name)}/ModelToIdf/in.idf"
+    if is_openstudio_2?
+      return "#{run_dir(test_name)}/run/in.idf"
+    else
+      return "#{run_dir(test_name)}/ModelToIdf/in.idf"
+    end
   end
 
   def sql_path(test_name)
-    "#{run_dir(test_name)}/ModelToIdf/EnergyPlusPreProcess-0/EnergyPlus-0/eplusout.sql"
+    if is_openstudio_2?
+      return "#{run_dir(test_name)}/run/eplusout.sql"
+    else
+      return "#{run_dir(test_name)}/ModelToIdf/EnergyPlusPreProcess-0/EnergyPlus-0/eplusout.sql"
+    end
   end
 
   def report_path(test_name)
     "#{run_dir(test_name)}/report.html"
   end
 
-  # create test files if they do not exist when the test first runs
-  def setup_test(test_name, idf_output_requests)
-    @@co.findTools(false, true, false, true)
+  # method for running the test simulation using OpenStudio 1.x API
+  def setup_test_1(test_name, epw_path)
 
-    unless File.exist?(run_dir(test_name))
+    co = OpenStudio::Runmanager::ConfigOptions.new(true)
+    co.findTools(false, true, false, true)
+
+    if !File.exist?(sql_path(test_name))
+      puts "Running EnergyPlus"
+
+      wf = OpenStudio::Runmanager::Workflow.new("modeltoidf->energypluspreprocess->energyplus")
+      wf.add(co.getTools())
+      job = wf.create(OpenStudio::Path.new(run_dir(test_name)), OpenStudio::Path.new(model_out_path(test_name)), OpenStudio::Path.new(epw_path))
+
+      rm = OpenStudio::Runmanager::RunManager.new
+      rm.enqueue(job, true)
+      rm.waitForFinished
+    end
+  end
+
+  # method for running the test simulation using OpenStudio 2.x API
+  def setup_test_2(test_name, epw_path)
+
+    if !File.exist?(sql_path(test_name))
+      osw_path = File.join(run_dir(test_name), 'in.osw')
+      osw_path = File.absolute_path(osw_path)
+
+      workflow = OpenStudio::WorkflowJSON.new
+      workflow.setSeedFile(File.absolute_path(model_out_path(test_name)))
+      workflow.setWeatherFile(File.absolute_path(epw_path))
+      workflow.saveAs(osw_path)
+
+      cli_path = OpenStudio.getOpenStudioCLI
+      cmd = "\"#{cli_path}\" run -w \"#{osw_path}\""
+      puts cmd
+      system(cmd)
+    end
+  end
+
+  # create test files if they do not exist when the test first runs
+  def setup_test(test_name, idf_output_requests, model_in_path = model_in_path_default, epw_path = epw_path_default)
+
+    if !File.exist?(run_dir(test_name))
       FileUtils.mkdir_p(run_dir(test_name))
     end
     assert(File.exist?(run_dir(test_name)))
@@ -63,26 +115,50 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
     end
 
     # convert output requests to OSM for testing, OS App and PAT will add these to the E+ Idf
-    workspace = OpenStudio::Workspace.new('Draft'.to_StrictnessLevel, 'EnergyPlus'.to_IddFileType)
+    workspace = OpenStudio::Workspace.new("Draft".to_StrictnessLevel, "EnergyPlus".to_IddFileType)
     workspace.addObjects(idf_output_requests)
     rt = OpenStudio::EnergyPlus::ReverseTranslator.new
     request_model = rt.translateWorkspace(workspace)
 
-    model = OpenStudio::Model::Model.load(model_in_path).get
+    translator = OpenStudio::OSVersion::VersionTranslator.new
+    model = translator.loadModel(model_in_path)
+    assert((not model.empty?))
+    model = model.get
     model.addObjects(request_model.objects)
     model.save(model_out_path(test_name), true)
 
-    unless File.exist?(sql_path(test_name))
-      puts 'Running EnergyPlus'
-
-      wf = OpenStudio::Runmanager::Workflow.new('modeltoidf->energypluspreprocess->energyplus')
-      wf.add(@@co.getTools)
-      job = wf.create(OpenStudio::Path.new(run_dir(test_name)), OpenStudio::Path.new(model_out_path(test_name)), OpenStudio::Path.new(epw_path))
-
-      rm = OpenStudio::Runmanager::RunManager.new
-      rm.enqueue(job, true)
-      rm.waitForFinished
+    if is_openstudio_2?
+      setup_test_2(test_name, epw_path)
+    else
+      setup_test_1(test_name, epw_path)
     end
+  end
+
+  # assert that no section errors were thrown
+  def section_errors(runner)
+
+    test_string = 'Error prevented QAQC check from running'
+
+    if is_openstudio_2?
+      section_errors = []
+      runner.result.stepWarnings.each do |warning|
+        if warning.include?(test_string)
+          section_errors << warning
+        end
+      end
+      assert(section_errors.size == 0)
+    else
+      section_errors = []
+      runner.result.warnings.each do |warning|
+        if warning.logMessage.include?(test_string)
+          section_errors << warning
+        end
+      end
+      assert(section_errors.size == 0)
+    end
+
+    return section_errors
+
   end
 
   def test_good_argument_values
@@ -115,6 +191,7 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
     assert_equal(0, idf_output_requests.size)
 
     # mimic the process of running this measure in OS App or PAT
+    epw_path = epw_path_default
     setup_test(test_name, idf_output_requests)
 
     assert(File.exist?(model_out_path(test_name)))
@@ -143,6 +220,10 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
       result = runner.result
       show_output(result)
       assert_equal('Success', result.value.valueName)
+
+      # look for section_errors
+      assert(section_errors(runner).size == 0)
+
     ensure
       Dir.chdir(start_dir)
     end
