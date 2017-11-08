@@ -271,7 +271,13 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment1_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_energy_sources(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_renewables(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_summary_by_enduse_test(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_summary_by_enduse(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_energy_cost_by_type(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_virtual_rate(model, sqlFile, runner)
+    tables << OsLib_Reporting.performance_unmet_loads(model, sqlFile, runner)
 
     return @perf_sect
   end
@@ -1185,6 +1191,314 @@ module OsLib_Reporting
     template_table[:header] = columns
     template_table[:source_units] = ['', '', '', 'Pa',       'm^3/s',   'W',  'W-s/m3', 'W/W'] # used for conversation, not needed for rendering.
     template_table[:units] =        ['', '', '', 'ftH_{2}O', 'gal/min', 'W',  'W-s/m3', 'W/W']
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_energy_sources(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-3. Energy Type Summary'
+    columns =       ['', 'Utility Rate', 'Units of Energy', 'Units of Demand']
+    columns_query = ['', 'Utility Rate', 'Units of Energy', 'Units of Demand']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Energy Sources'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', '', '', ''] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', '', '', '']
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_renewables(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'L-1. Renewable Energy Source Summary'
+    columns =       ['', 'Rated Capacity', 'Annual Energy Generated']
+    columns_query = ['', 'Rated Capacity', 'Annual Energy Generated']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'On-Site Renewable Energy Production'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', 'kW', 'GJ'] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', 'kW', 'kWh']
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_summary_by_enduse_test(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-4/5. Performance Rating Method Compliance'
+    columns =       ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
+    columns_query = ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Test Energy Summary by End Use'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', 'GJ', 'W', 'GJ',   'W',      'GJ',  'W',     'GJ',  'W',     'GJ',  'W'] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', 'kWh','W', 'kBtu', 'kBtu/h', 'kBtu','kBtu/h','kBtu','kBtu/h','kBtu','kBtu/h' ]
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_summary_by_enduse(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-4/5. Performance Rating Method Compliance'
+    columns =       ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
+    columns_query = ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
+
+    # the following maps the names used in LEED report to what comes out of the EnergyPlus EAp2-4/5 report as of EnergyPlus 8.8.0
+    # if more than one EnergyPlus row name is shown, they are added together (they would not usually both occur)
+    leed_row_name_map = []
+    leed_row_name_map < ['Interior lighting','Electricity','Interior Lighting -- General', 'Interior Lighting -- Not Subdivided']
+    leed_row_name_map < ['Exterior lighting','Electricity']
+    leed_row_name_map < ['Space heating','Natural Gas']
+    leed_row_name_map < ['Space cooling','Electricity']
+    leed_row_name_map < ['Pumps','Electricity']
+    leed_row_name_map < ['Heat rejection','Electricity']
+    leed_row_name_map < ['Fans - interior ventilation','Electricity']
+    leed_row_name_map < ['Fans - parking garage','Electricity']
+    leed_row_name_map < ['Service water heating','Natural Gas']
+    leed_row_name_map < ['Receptacle equipment','Electricity']
+    leed_row_name_map < ['IT equipment','Electricity']
+    leed_row_name_map < ['Interior lighting - process','Electricity']
+    leed_row_name_map < ['Refrigeration equipment','Electricity']
+    leed_row_name_map < ['Fans - Kitchen Ventilation','Electricity']
+    leed_row_name_map < ['Cooking','Electricity']
+    leed_row_name_map < ['Industrial Process','Electricity']
+    leed_row_name_map < ['Elevators and escalators','Electricity']
+    leed_row_name_map < ['Heat Pump Supplementary','Electricity']
+    leed_row_name_map < ['Space Heating (Electricity)','Electricity']
+    leed_row_name_map < ['Misc Equipment (Natural Gas)','Natural Gas']
+    leed_row_name_map < ['Auxilary (Natural Gas)','Natural Gas']
+    leed_row_name_map < ['Cooling (Natural Gas)','Natural Gas']
+
+
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Energy Summary by End Use'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', 'GJ', 'W', 'GJ',   'W',      'GJ',  'W',     'GJ',  'W',     'GJ',  'W'] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', 'kWh','W', 'kBtu', 'kBtu/h', 'kBtu','kBtu/h','kBtu','kBtu/h','kBtu','kBtu/h' ]
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_energy_cost_by_type(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-7. Energy Cost Summary'
+    columns =       ['', 'Total Energy Cost']
+    columns_query = ['', 'Total Energy Cost']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Annual Energy Cost by Energy Type'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', ''] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', '']
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_virtual_rate(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-3. Energy Type Summary'
+    columns =       ['', 'Utility Rate', 'Virtual Rate','Units of Energy']
+    columns_query = ['', 'Utility Rate', 'Virtual Rate','Units of Energy']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Virtual Rate'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', '', '$ per', ''] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', '', '$ per', '']
+    template_table[:data] = []
+
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        if not template_table[:source_units][column_counter] == ''
+          results = sqlFile.execAndReturnFirstDouble(query)
+          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
+          row_data << row_data_ip.round(2)
+        else
+          results = sqlFile.execAndReturnFirstString(query)
+          row_data << results
+        end
+      end
+      template_table[:data] << row_data
+    end
+	return template_table
+  end
+
+  def self.performance_unmet_loads(model, sqlFile, runner)
+    report_name = 'LEEDsummary'
+    table_name = 'EAp2-2. Advisory Messages'
+    columns =       ['', 'Data']
+    columns_query = ['', 'Data']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
+    template_table = {}
+    template_table[:title] = 'Unmet Loads'
+    template_table[:header] = columns
+    template_table[:source_units] = ['', ''] # used for conversation, not needed for rendering.
+    template_table[:units] =        ['', '']
     template_table[:data] = []
 
     # run query and populate table
