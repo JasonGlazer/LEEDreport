@@ -1338,69 +1338,128 @@ module OsLib_Reporting
   def self.performance_summary_by_enduse(model, sqlFile, runner)
     report_name = 'LEEDsummary'
     table_name = 'EAp2-4/5. Performance Rating Method Compliance'
-    columns =       ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
-    columns_query = ['', 'Electric Energy Use', 'Electric Demand', 'Natural Gas Energy Use','Natural Gas Demand','Additional Fuel Use','Additional Fuel Demand','District Cooling Use','District Cooling Demand','District Heating Use','District Heating Demand']
 
     # the following maps the names used in LEED report to what comes out of the EnergyPlus EAp2-4/5 report as of EnergyPlus 8.8.0
     # if more than one EnergyPlus row name is shown, they are added together (they would not usually both occur)
     leed_row_name_map = []
-    leed_row_name_map < ['Interior lighting','Electricity','Interior Lighting -- General', 'Interior Lighting -- Not Subdivided']
-    leed_row_name_map < ['Exterior lighting','Electricity']
-    leed_row_name_map < ['Space heating','Natural Gas']
-    leed_row_name_map < ['Space cooling','Electricity']
-    leed_row_name_map < ['Pumps','Electricity']
-    leed_row_name_map < ['Heat rejection','Electricity']
-    leed_row_name_map < ['Fans - interior ventilation','Electricity']
-    leed_row_name_map < ['Fans - parking garage','Electricity']
-    leed_row_name_map < ['Service water heating','Natural Gas']
-    leed_row_name_map < ['Receptacle equipment','Electricity']
-    leed_row_name_map < ['IT equipment','Electricity']
-    leed_row_name_map < ['Interior lighting - process','Electricity']
-    leed_row_name_map < ['Refrigeration equipment','Electricity']
-    leed_row_name_map < ['Fans - Kitchen Ventilation','Electricity']
-    leed_row_name_map < ['Cooking','Electricity']
-    leed_row_name_map < ['Industrial Process','Electricity']
-    leed_row_name_map < ['Elevators and escalators','Electricity']
-    leed_row_name_map < ['Heat Pump Supplementary','Electricity']
-    leed_row_name_map < ['Space Heating (Electricity)','Electricity']
-    leed_row_name_map < ['Misc Equipment (Natural Gas)','Natural Gas']
-    leed_row_name_map < ['Auxilary (Natural Gas)','Natural Gas']
-    leed_row_name_map < ['Cooling (Natural Gas)','Natural Gas']
+    leed_row_name_map << ['Interior lighting','Electricity',['Interior Lighting -- General', 'Interior Lighting -- Not Subdivided']]
+    leed_row_name_map << ['Exterior lighting','Electricity',['Exterior Lighting -- General', 'Exterior Lighting -- Not Subdivided']]
+    leed_row_name_map << ['Space heating','Natural Gas',['Heating -- General', 'Heating -- Not Subdivided', 'Heating -- Boiler']]
+    leed_row_name_map << ['Space cooling','Electricity',['Cooling -- General', 'Cooling -- Not Subdivided']]
+    leed_row_name_map << ['Pumps','Electricity',['Pumps -- General', 'Pumps -- Not Subdivided']]
+    leed_row_name_map << ['Heat rejection','Electricity',['Heat Rejection -- General', 'Heat Rejection -- Not Subdivided']]
+    leed_row_name_map << ['Fans - interior ventilation','Electricity',['Fans -- General', 'Fans -- Not Subdivided', 'Fans -- interior ventilation']]
+    leed_row_name_map << ['Fans - parking garage','Electricity',['Fans -- parking garage']]
+    leed_row_name_map << ['Service water heating','Natural Gas',['Water Systems -- Water Heater']]
+    leed_row_name_map << ['Receptacle equipment','Electricity',['Interior Equipment -- General', 'Interior Equipment -- Not Subdivided', 'Interior Equipment -- ElectricEquipment']]
+    leed_row_name_map << ['IT equipment','Electricity',['Interior Equipment -- IT equipment']]
+    leed_row_name_map << ['Interior lighting - process','Electricity',['Interior Lighting -- process']]
+    leed_row_name_map << ['Refrigeration equipment','Electricity',['Refrigeration -- General', 'Refrigeration -- Not Subdivided']]
+    leed_row_name_map << ['Fans - Kitchen Ventilation','Electricity',['Fans -- Kitchen Ventilation']]
+    leed_row_name_map << ['Cooking','Electricity',['Interior Equipment -- Cooking']]
+    leed_row_name_map << ['Industrial Process','Electricity',['Interior Equipment -- Industrial Process']]
+    leed_row_name_map << ['Elevators and escalators','Electricity',['Interior Equipment -- Elevators and escalators']]
+    leed_row_name_map << ['Heat Pump Supplementary','Electricity',['Heating -- Heat Pump Supplementary']]
+    leed_row_name_map << ['Space Heating (Electricity)','Electricity',['Heating -- General', 'Heating -- Not Subdivided', 'Heating -- Space Heating']]
+    leed_row_name_map << ['Misc Equipment (Natural Gas)','Natural Gas',['Interior Equipment -- Misc Equipment']]
+    leed_row_name_map << ['Auxilary (Natural Gas)','Natural Gas',['Interior Equipment -- Auxilary']]
+    leed_row_name_map << ['Cooling (Natural Gas)','Natural Gas',['Cooling -- General', 'Cooling -- Not Subdivided']]
+    # the following rows are not explicitly in spreadsheet but implied because the energy type can be changed by the user
+    leed_row_name_map << ['Service water heating','Electricity',['Water Systems -- Water Heater']]
+    leed_row_name_map << ['Cooking','Natural Gas',['Interior Equipment -- Cooking']]
+    leed_row_name_map << ['Industrial Process','Natural Gas',['Interior Equipment -- Industrial Process']]
 
-
-
+    energy_types_convs = []
+    energy_types_convs << ['Electric','GJ','kWh','W','kW','Electricity']
+    energy_types_convs << ['Natural Gas','GJ','kBtu','W','kBtu/h','Natural Gas']
+    energy_types_convs << ['Additional Fuel','GJ','kBtu','W','kBtu/h','Additional Fuel']
+    energy_types_convs << ['District Cooling','GJ','kBtu','W','kBtu/h','District Cooling']
+    energy_types_convs << ['District Heating','GJ','kBtu','W','kBtu/h','District Heating']
+    
     # populate dynamic rows
     rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
     rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
 
+    # create intermediate table to store converted values
+    converted = Hash.new
+    rows.each do |row|
+      energy_types_convs.each do |energy_types_conv|
+        energy_type, energy_si_unit, energy_ip_unit, demand_si_unit, demand_ip_unit, leed_energy_type = energy_types_conv
+
+        energy_column = "#{energy_type} Energy Use"
+        energy_query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{energy_column}'"
+        energy_value = sqlFile.execAndReturnFirstDouble(energy_query)
+        #puts "debug row:#{row}  energy_column:#{energy_column}  energy_value:#{energy_value}   energy_si_unit:#{energy_si_unit} energy_ip_unit:#{energy_ip_unit}"
+        if not energy_value == ''
+          energy_value_ip = OpenStudio.convert(energy_value.to_f, energy_si_unit, energy_ip_unit).get
+        else
+          energy_value_ip = energy_value
+        end 
+
+        demand_column = "#{energy_type} Demand" 
+        demand_query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{demand_column}'"
+        demand_value = sqlFile.execAndReturnFirstDouble(demand_query)
+        if not demand_value == ''
+          demand_value_ip = OpenStudio.convert(demand_value.to_f, demand_si_unit, demand_ip_unit).get
+        else
+          demand_value_ip = demand_value
+        end 
+        
+        hash_string = "#{row};#{leed_energy_type}"
+        
+        converted[hash_string] = [ energy_value_ip, energy_ip_unit, demand_value_ip, demand_ip_unit]
+      end
+    end
+
+    #puts '---------------------------------'
+    #puts converted
+    #puts '---------------------------------'
+
     # create table
     template_table = {}
     template_table[:title] = 'Energy Summary by End Use'
-    template_table[:header] = columns
-    template_table[:source_units] = ['', 'GJ', 'W', 'GJ',   'W',      'GJ',  'W',     'GJ',  'W',     'GJ',  'W'] # used for conversation, not needed for rendering.
-    template_table[:units] =        ['', 'kWh','W', 'kBtu', 'kBtu/h', 'kBtu','kBtu/h','kBtu','kBtu/h','kBtu','kBtu/h' ]
+    template_table[:header] = ['End Use','Energy Type', 'Units of Annual Energy and Peak Demand', 'Value']
+    template_table[:units] =  ['', '', '', '']
     template_table[:data] = []
-
-    # run query and populate table
-    rows.each do |row|
-      row_data = [row]
-      column_counter = -1
-      columns_query.each do |header|
-        column_counter += 1
-        next if header == ''
-        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
-        if not template_table[:source_units][column_counter] == ''
-          results = sqlFile.execAndReturnFirstDouble(query)
-          row_data_ip = OpenStudio.convert(results.to_f, template_table[:source_units][column_counter], template_table[:units][column_counter]).get
-          row_data << row_data_ip.round(2)
-        else
-          results = sqlFile.execAndReturnFirstString(query)
-          row_data << results
+    
+    
+    leed_row_name_map.each do |leed_row|
+      leed_enduse, leed_energy_type, energyplus_rows = leed_row
+      #puts "leed_enduse: #{leed_enduse} leed_energy_type: #{leed_energy_type} energyplus_rows: #{energyplus_rows}"
+      energy_cell_value = 0.0
+      demand_cell_value = 0.0
+      energy_ip_unit = " "
+      demand_ip_unit = " "
+      energyplus_rows.each do |energyplus_row|
+        hash_string = "#{energyplus_row};#{leed_energy_type}"
+        converted_return = converted[hash_string]
+        if not converted_return == nil
+          energy_value_ip, energy_ip_unit, demand_value_ip, demand_ip_unit = converted_return
+          #puts "hash_string: #{hash_string} energy_value_ip: #{energy_value_ip} energy_ip_unit: #{energy_ip_unit} demand_value_ip: #{demand_value_ip} demand_ip_unit: #{demand_ip_unit}"
+          energy_cell_value += energy_value_ip
+          demand_cell_value += demand_value_ip #strictly speaking adding up demands is not right but almost all the time the value will be based on a single energyplus row and the others will be zero
+          converted[hash_string] = [ 0.0, "", 0.0, ""] #put in blanks so that it wont be shown again
+        end
+      end  
+      template_table[:data] << [leed_enduse, leed_energy_type, "Consumption (#{energy_ip_unit})",energy_cell_value.round(2)]
+      template_table[:data] << [leed_enduse, leed_energy_type, "Demand (#{demand_ip_unit})",demand_cell_value.round(2)]
+    end
+    
+    converted.each do |key, converted_row|
+      if not converted_row == nil
+        energy_value_ip, energy_ip_unit, demand_value_ip, demand_ip_unit = converted_row
+        if energy_value_ip != 0.0 || demand_value_ip != 0.0
+          template_table[:data] << ['', '', "Consumption (#{energy_ip_unit})",energy_value_ip.round(2)]
+          template_table[:data] << ['', '', "Demand (#{demand_ip_unit})",demand_value_ip.round(2)]
         end
       end
-      template_table[:data] << row_data
     end
+    
+    #puts '---------------------------------'
+    #puts template_table
+    #puts '---------------------------------'
 	return template_table
+    
   end
 
   def self.performance_energy_cost_by_type(model, sqlFile, runner)
