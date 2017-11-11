@@ -26,7 +26,6 @@ class EnhancedLEEDSummaryReport < OpenStudio::Ruleset::ReportingUserScript
 
     result << "general_information_section"
     result << "schedules_section"
-    result << "eflh_section"
     result << "opaque_section"
     result << "fene_section"
     result << "lighting_section"

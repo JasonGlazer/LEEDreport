@@ -87,27 +87,6 @@ module OsLib_Reporting
     return @schedules_sect
   end
 
-
-  def self.eflh_section(model, sqlFile, runner, name_only = false)
-    # array to hold tables
-    tables = []
-
-    # gather data for section
-    @eflh_sect = {}
-    @eflh_sect[:title] = 'EFLH Calculator Tab'
-    @eflh_sect[:tables] = tables
-
-    # stop here if only name is requested this is used to populate display name for arguments
-    if name_only == true
-      return @eflh_sect
-    end
-
-    # using helper method that generates table for second example
-    tables << OsLib_Reporting.experiment1_table(model, sqlFile, runner)
-
-    return @eflh_sect
-  end
-
   def self.opaque_section(model, sqlFile, runner, name_only = false)
     # array to hold tables
     tables = []
@@ -1441,6 +1420,15 @@ module OsLib_Reporting
           converted[hash_string] = [ 0.0, "", 0.0, ""] #put in blanks so that it wont be shown again
         end
       end  
+      if energy_ip_unit == " " && demand_ip_unit == " " && energy_cell_value == 0.0 && demand_cell_value == 0.0
+        if leed_energy_type == "Electricity"
+          energy_ip_unit = "kWh"
+          demand_ip_unit = "kW"
+        else
+          energy_ip_unit = "kBtu"
+          demand_ip_unit = "kBtu/h"
+        end
+      end
       template_table[:data] << [leed_enduse, leed_energy_type, "Consumption (#{energy_ip_unit})",energy_cell_value.round(2)]
       template_table[:data] << [leed_enduse, leed_energy_type, "Demand (#{demand_ip_unit})",demand_cell_value.round(2)]
     end
@@ -1448,9 +1436,10 @@ module OsLib_Reporting
     converted.each do |key, converted_row|
       if not converted_row == nil
         energy_value_ip, energy_ip_unit, demand_value_ip, demand_ip_unit = converted_row
+        energyplus_row,leed_energy_type = key.split(';')
         if energy_value_ip != 0.0 || demand_value_ip != 0.0
-          template_table[:data] << ['', '', "Consumption (#{energy_ip_unit})",energy_value_ip.round(2)]
-          template_table[:data] << ['', '', "Demand (#{demand_ip_unit})",demand_value_ip.round(2)]
+          template_table[:data] << [energyplus_row, leed_energy_type, "Consumption (#{energy_ip_unit})",energy_value_ip.round(2)]
+          template_table[:data] << [energyplus_row, leed_energy_type, "Demand (#{demand_ip_unit})",demand_value_ip.round(2)]
         end
       end
     end
