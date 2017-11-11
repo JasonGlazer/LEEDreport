@@ -1,4 +1,5 @@
 require 'json'
+require 'csv'
 
 module OsLib_Reporting
 
@@ -81,7 +82,7 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-    tables << OsLib_Reporting.schedules_EFLH_table(model, sqlFile, runner)
+#    tables << OsLib_Reporting.schedules_EFLH_table(model, sqlFile, runner)
     tables << OsLib_Reporting.schedules_SetPts_table(model, sqlFile, runner)
 
     return @schedules_sect
@@ -445,20 +446,34 @@ module OsLib_Reporting
     # add rows to table
 
     # Cooling Degree Days
-    display = 'Cooling Degree Days'
-    template_table[:data] << [display, "TO DO", ""]
+#    display = 'Cooling Degree Days'
+#    template_table[:data] << [display, "TO DO", ""]
 
     # Heating Degree Days
-    display = 'Heating Degree Days'
-    template_table[:data] << [display, "TO DO", ""]
+#    display = 'Heating Degree Days'
+#    template_table[:data] << [display, "TO DO", ""]
 
     # HDD and CDD data source
-    display = 'HDD and CDD data source'
-    template_table[:data] << [display, "TO DO", ""]
+#    display = 'HDD and CDD data source'
+#    template_table[:data] << [display, "TO DO", ""]
 
     # Climate Zone
-    display = 'Climate Zone'
-    template_table[:data] << [display, "TO DO", ""]
+
+    # add in climate zone from OpenStudio model
+    # get ashrae climate zone from model
+    climate_zone = ''
+    climateZones = model.getClimateZones
+    climateZones.climateZones.each do |climateZone|
+      if climateZone.institution == "ASHRAE"
+        climate_zone = climateZone.value
+        next
+      end
+    end
+
+    template_table[:data] << ['ASHRAE Climate Zone',climate_zone]
+
+
+
 
     # weather file
     query = 'SELECT Value FROM tabulardatawithstrings WHERE '
@@ -1286,7 +1301,7 @@ module OsLib_Reporting
 
     # create table
     template_table = {}
-    template_table[:title] = 'Test Energy Summary by End Use'
+    template_table[:title] = 'Energy Summary by End Use - EnergyPlus Layout'
     template_table[:header] = columns
     template_table[:source_units] = ['', 'GJ', 'W', 'GJ',   'W',      'GJ',  'W',     'GJ',  'W',     'GJ',  'W'] # used for conversation, not needed for rendering.
     template_table[:units] =        ['', 'kWh','W', 'kBtu', 'kBtu/h', 'kBtu','kBtu/h','kBtu','kBtu/h','kBtu','kBtu/h' ]
@@ -1443,10 +1458,24 @@ module OsLib_Reporting
         end
       end
     end
+
+
+    # Write the rows out to CSV
+    csv_path = File.expand_path("./LEED_Performance_Output_Tab_Energy_Summary_by_End_Use.csv")
+    CSV.open(csv_path, "wb") do |csv_object|
+      csv_object << template_table[:header] 
+      template_table[:data].each do |row|
+        csv_object << row
+      end
+    end    
+    csv_path = File.absolute_path(csv_path)
+    runner.registerInfo("An output report section and CSV file were created for LEED MEPC Performance Outputs")
+    runner.registerInfo("CSV file saved to #{csv_path}.")
     
     #puts '---------------------------------'
     #puts template_table
     #puts '---------------------------------'
+
 	return template_table
     
   end
