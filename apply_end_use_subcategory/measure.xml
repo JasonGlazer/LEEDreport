@@ -1,0 +1,302 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>apply_end_use_subcategory</name>
+  <uid>33833705-0ae8-4d53-ab95-723f35f89d2c</uid>
+  <version_id>44927d62-ecbb-4210-b3ba-9c12917c9962</version_id>
+  <version_modified>20171129T151200Z</version_modified>
+  <xml_checksum>26F1AB7C</xml_checksum>
+  <class_name>ApplyEndUseSubcategory</class_name>
+  <display_name>Apply End-Use Subcategory</display_name>
+  <description>zx To aid in applying end-use subcategories to various objects so that they appear correctly in the reports that show breakdowns by end-use subcategory including EnergyPlus ABUPS End Uses by Subcateogry report and the report produced by the enhanced LEED summary report measure. </description>
+  <modeler_description>zAllow users to apply specific end-use subcategories to various components in their OpenStudio model. Specific predefined end-use subcategory tags that correspond to LEED end-uses that have special treatment in the LEED spreadsheet will be used such as Fans-Parking Garage, Interior Lighting-Process, Fans-Kitchen Ventilation, Elevators and Escalators, etc. The end-use subcategories for the following: Lights, ElectricEquipment, GasEquipment, HotWaterEquipment, SteamEquipment, OtherEquipment, Exterior:Lights, Fan:ConstantVolume, Fan:VariableVolume, Fan:OnOff, Fan:ZoneExhaust, WaterHeater:Stratified, EnergyManagementSystem:MeteredOutputVariable, Refrigeration:Condenser:AirCooled, Refrigeration:Condenser:EvaporativeCooled, Refrigeration:Condenser:WaterCooled, Refrigeration:GasCooler:AirCooled, Refrigeration:Compressor, Refrigeration:System. Refrigeration:TranscriticalSystem, Refrigeration:SecondarySystem</modeler_description>
+  <arguments>
+    <argument>
+      <name>Name of Object - Type of Object</name>
+      <display_name>Name of Object - Type of Object</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>End Use Subcategory</name>
+      <display_name>End Use Subcategory</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <choices>
+        <choice>
+          <value>Fans - interior ventilation</value>
+          <display_name>Fans - interior ventilation</display_name>
+        </choice>
+        <choice>
+          <value>Fans - parking garage</value>
+          <display_name>Fans - parking garage</display_name>
+        </choice>
+        <choice>
+          <value>IT Equipment</value>
+          <display_name>IT Equipment</display_name>
+        </choice>
+        <choice>
+          <value>Interior lighting - process</value>
+          <display_name>Interior lighting - process</display_name>
+        </choice>
+        <choice>
+          <value>Fans - Kitchen Ventilation</value>
+          <display_name>Fans - Kitchen Ventilation</display_name>
+        </choice>
+        <choice>
+          <value>Industrial Process</value>
+          <display_name>Industrial Process</display_name>
+        </choice>
+        <choice>
+          <value>Elevators and escalators</value>
+          <display_name>Elevators and escalators</display_name>
+        </choice>
+        <choice>
+          <value>Heat Pump Supplementary</value>
+          <display_name>Heat Pump Supplementary</display_name>
+        </choice>
+        <choice>
+          <value>Misc Equipment</value>
+          <display_name>Misc Equipment</display_name>
+        </choice>
+        <choice>
+          <value>Auxiliary</value>
+          <display_name>Auxiliary</display_name>
+        </choice>
+        <choice>
+          <value>----------------------</value>
+          <display_name>----------------------</display_name>
+        </choice>
+        <choice>
+          <value>Lighting In Apartments</value>
+          <display_name>Lighting In Apartments</display_name>
+        </choice>
+        <choice>
+          <value>Cooking</value>
+          <display_name>Cooking</display_name>
+        </choice>
+        <choice>
+          <value>IT Equipment CPU</value>
+          <display_name>IT Equipment CPU</display_name>
+        </choice>
+        <choice>
+          <value>IT Equipment Fans</value>
+          <display_name>IT Equipment Fans</display_name>
+        </choice>
+        <choice>
+          <value>IT Equipment UPS</value>
+          <display_name>IT Equipment UPS</display_name>
+        </choice>
+        <choice>
+          <value>Refrigeration Equipment Unregulated</value>
+          <display_name>Refrigeration Equipment Unregulated</display_name>
+        </choice>
+        <choice>
+          <value>Refrigeration Equipment Regulated</value>
+          <display_name>Refrigeration Equipment Regulated</display_name>
+        </choice>
+        <choice>
+          <value>Building Transformers</value>
+          <display_name>Building Transformers</display_name>
+        </choice>
+        <choice>
+          <value>Computers</value>
+          <display_name>Computers</display_name>
+        </choice>
+        <choice>
+          <value>Office Equipment</value>
+          <display_name>Office Equipment</display_name>
+        </choice>
+        <choice>
+          <value>Grounds Lights</value>
+          <display_name>Grounds Lights</display_name>
+        </choice>
+        <choice>
+          <value>Facade Lighting</value>
+          <display_name>Facade Lighting</display_name>
+        </choice>
+        <choice>
+          <value>Parking Lighting</value>
+          <display_name>Parking Lighting</display_name>
+        </choice>
+        <choice>
+          <value>Accent Lighting</value>
+          <display_name>Accent Lighting</display_name>
+        </choice>
+        <choice>
+          <value>Task Lights</value>
+          <display_name>Task Lights</display_name>
+        </choice>
+        <choice>
+          <value>Clothes Washing</value>
+          <display_name>Clothes Washing</display_name>
+        </choice>
+        <choice>
+          <value>Clothes Drying</value>
+          <display_name>Clothes Drying</display_name>
+        </choice>
+        <choice>
+          <value>Zone Exhaust Fans</value>
+          <display_name>Zone Exhaust Fans</display_name>
+        </choice>
+        <choice>
+          <value>Fume Hoods</value>
+          <display_name>Fume Hoods</display_name>
+        </choice>
+        <choice>
+          <value>Bathrooms</value>
+          <display_name>Bathrooms</display_name>
+        </choice>
+        <choice>
+          <value>Dishwashing</value>
+          <display_name>Dishwashing</display_name>
+        </choice>
+        <choice>
+          <value>Showers</value>
+          <display_name>Showers</display_name>
+        </choice>
+        <choice>
+          <value>Bathroom Handwashing</value>
+          <display_name>Bathroom Handwashing</display_name>
+        </choice>
+        <choice>
+          <value>Kitchen Sink</value>
+          <display_name>Kitchen Sink</display_name>
+        </choice>
+        <choice>
+          <value>Light Food Prep</value>
+          <display_name>Light Food Prep</display_name>
+        </choice>
+        <choice>
+          <value>Rain and Well Water</value>
+          <display_name>Rain and Well Water</display_name>
+        </choice>
+        <choice>
+          <value>Other 1</value>
+          <display_name>Other 1</display_name>
+        </choice>
+        <choice>
+          <value>Other 2</value>
+          <display_name>Other 2</display_name>
+        </choice>
+        <choice>
+          <value>Other 3</value>
+          <display_name>Other 3</display_name>
+        </choice>
+        <choice>
+          <value>Other 4</value>
+          <display_name>Other 4</display_name>
+        </choice>
+        <choice>
+          <value>Other 5</value>
+          <display_name>Other 5</display_name>
+        </choice>
+        <choice>
+          <value>Other 6</value>
+          <display_name>Other 6</display_name>
+        </choice>
+        <choice>
+          <value>Other 7</value>
+          <display_name>Other 7</display_name>
+        </choice>
+        <choice>
+          <value>Other 8</value>
+          <display_name>Other 8</display_name>
+        </choice>
+        <choice>
+          <value>Other 9</value>
+          <display_name>Other 9</display_name>
+        </choice>
+      </choices>
+    </argument>
+  </arguments>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Space Types</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Function</name>
+      <value>Measure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Requires EnergyPlus Results</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+    <attribute>
+      <name>Uses SketchUp API</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Model Articulation</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>EnvelopeAndLoadTestModel_01.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>138E2AAC</checksum>
+    </file>
+    <file>
+      <filename>EnvelopeAndLoadTestModel_01_FullyCosted.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>38E06CA8</checksum>
+    </file>
+    <file>
+      <filename>ReduceElectricEquipmentLoadsByPercentage_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>B7EBBEBA</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>0.10.2</identifier>
+        <min_compatible>1.8.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>E0CE5510</checksum>
+    </file>
+  </files>
+</measure>
