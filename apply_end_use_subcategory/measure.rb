@@ -42,6 +42,57 @@ class ApplyEndUseSubcategory < OpenStudio::Ruleset::ModelUserScript
     return list
   end
 
+  def get_specific_obj(obj, type_of_object)
+    case type_of_object
+    when "Lights"
+      specific_obj = obj.to_Lights.get
+    when "ElectricEquipment" 
+      specific_obj = obj.to_ElectricEquipment.get
+    when "GasEquipment"
+      specific_obj = obj.to_GasEquipment.get
+    when "HotWaterEquipment"
+      specific_obj = obj.to_HotWaterEquipment.get
+    when "SteamEquipment"
+      specific_obj = obj.to_SteamEquipment.get
+    when "OtherEquipment"
+      specific_obj = obj.to_OtherEquipment.get
+    when "Exterior:Lights"
+      specific_obj = obj.to_ExteriorLights.get
+    when "Fan:ConstantVolume"
+      specific_obj = obj.to_FanConstantVolume.get
+    when "Fan:VariableVolume"
+      specific_obj = obj.to_FanVariableVolume.get
+    when "Fan:OnOff"
+      specific_obj = obj.to_FanOnOff.get
+    when "Fan:ZoneExhaust"
+      specific_obj = obj.to_FanZoneExhaust.get
+    when "WaterHeater:Stratified"
+      specific_obj = obj.to_WaterHeaterStratified.get
+    when "EnergyManagementSystem:MeteredOutputVariable"
+      specific_obj = obj.to_EnergyManagementSystemMeteredOutputVariable.get
+    when "Refrigeration:Condenser:AirCooled"
+      specific_obj = obj.to_RefrigerationCondenserAirCooled.get
+    when "Refrigeration:Condenser:EvaporativeCooled"
+      specific_obj = obj.to_RefrigerationCondenserEvaporativeCooled.get
+    when "Refrigeration:Condenser:WaterCooled"
+      specific_obj = obj.to_RefrigerationCondenserWaterCooled.get
+    when "Refrigeration:GasCooler:AirCooled"
+      specific_obj = obj.to_RefrigerationGasCoolerAirCooled.get
+    when "Refrigeration:Compressor"
+      specific_obj = obj.to_RefrigerationCompressor.get
+    when "Refrigeration:System"
+      specific_obj = obj.to_RefrigerationSystem.get
+    when "Refrigeration:TranscriticalSystem"
+      specific_obj = obj.to_RefrigerationTranscriticalSystem.get
+    when "Refrigeration:SecondarySystem"
+      specific_obj = obj.to_RefrigerationSecondarySystem.get
+    else
+      specific_obj = "Not found"
+    end
+    return specific_obj
+  end
+
+
   #define the arguments that the user will input
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
@@ -148,18 +199,15 @@ class ApplyEndUseSubcategory < OpenStudio::Ruleset::ModelUserScript
       objs_of_selected.each do |obj|
         if name_of_obj == obj.name.to_s
           runner.registerInfo("An object of type 'OS:#{type_of_object}' named '#{obj.name.to_s}' was found.")
-#          runner.registerInfo( obj.methods.join(","))
-#          mod_obj = obj.to_ModelObject
-#          runner.registerInfo( "===================================================")
-#          runner.registerInfo( mod_obj.methods.join(","))
+          specific_obj = get_specific_obj(obj, type_of_object)
           found = true
-          if obj.isEndUseSubcategoryDefaulted()
+          if specific_obj.isEndUseSubcategoryDefaulted()
             runner.registerInitialCondition("The object '#{name_of_obj}' of type 'OS:#{type_of_object}' was initially defaulted.")
           else
-            existing_string = obj.endUseSubcategory
+            existing_string = specific_obj.endUseSubcategory
             runner.registerInitialCondition("The object '#{name_of_obj}' of type 'OS:#{type_of_object}' was initially had the value of #{existing_string}.")
           end
-          obj.setEndUseSubcategory(selected_subcategory)
+          specific_obj.setEndUseSubcategory(selected_subcategory)
           runner.registerFinalCondition("The end-use subcategory '#{selected_subcategory}' has been applied to an object of type 'OS:#{type_of_object}' named '#{name_of_obj}'.")
         end
       end  
