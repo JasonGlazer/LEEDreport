@@ -2,23 +2,23 @@
   <schema_version>3.0</schema_version>
   <name>apply_end_use_subcategory</name>
   <uid>33833705-0ae8-4d53-ab95-723f35f89d2c</uid>
-  <version_id>44927d62-ecbb-4210-b3ba-9c12917c9962</version_id>
-  <version_modified>20171129T151200Z</version_modified>
+  <version_id>69b82e3c-f181-44e9-8f69-07e1c75ea8f7</version_id>
+  <version_modified>20171208T193642Z</version_modified>
   <xml_checksum>26F1AB7C</xml_checksum>
   <class_name>ApplyEndUseSubcategory</class_name>
   <display_name>Apply End-Use Subcategory</display_name>
-  <description>zx To aid in applying end-use subcategories to various objects so that they appear correctly in the reports that show breakdowns by end-use subcategory including EnergyPlus ABUPS End Uses by Subcateogry report and the report produced by the enhanced LEED summary report measure. </description>
-  <modeler_description>zAllow users to apply specific end-use subcategories to various components in their OpenStudio model. Specific predefined end-use subcategory tags that correspond to LEED end-uses that have special treatment in the LEED spreadsheet will be used such as Fans-Parking Garage, Interior Lighting-Process, Fans-Kitchen Ventilation, Elevators and Escalators, etc. The end-use subcategories for the following: Lights, ElectricEquipment, GasEquipment, HotWaterEquipment, SteamEquipment, OtherEquipment, Exterior:Lights, Fan:ConstantVolume, Fan:VariableVolume, Fan:OnOff, Fan:ZoneExhaust, WaterHeater:Stratified, EnergyManagementSystem:MeteredOutputVariable, Refrigeration:Condenser:AirCooled, Refrigeration:Condenser:EvaporativeCooled, Refrigeration:Condenser:WaterCooled, Refrigeration:GasCooler:AirCooled, Refrigeration:Compressor, Refrigeration:System. Refrigeration:TranscriticalSystem, Refrigeration:SecondarySystem</modeler_description>
+  <description>To aid in applying end-use subcategories to various objects so that they appear correctly in the reports that show breakdowns by end-use subcategory including EnergyPlus ABUPS End Uses by Subcateogry report and the report produced by the enhanced LEED summary report measure. </description>
+  <modeler_description>Allow users to apply specific end-use subcategories to various components in their OpenStudio model. Specific predefined end-use subcategory tags that correspond to LEED end-uses that have special treatment in the LEED spreadsheet will be used such as Fans-Parking Garage, Interior Lighting-Process, Fans-Kitchen Ventilation, Elevators and Escalators, etc. The end-use subcategories for the following: Lights, ElectricEquipment, GasEquipment, HotWaterEquipment, SteamEquipment, OtherEquipment, Exterior:Lights, Fan:ConstantVolume, Fan:VariableVolume, Fan:OnOff, Fan:ZoneExhaust, WaterHeater:Stratified, EnergyManagementSystem:MeteredOutputVariable, Refrigeration:Condenser:AirCooled, Refrigeration:Condenser:EvaporativeCooled, Refrigeration:Condenser:WaterCooled, Refrigeration:GasCooler:AirCooled, Refrigeration:Compressor, Refrigeration:System. Refrigeration:TranscriticalSystem, Refrigeration:SecondarySystem</modeler_description>
   <arguments>
     <argument>
-      <name>Name of Object - Type of Object</name>
+      <name>name_obj_choice_obj</name>
       <display_name>Name of Object - Type of Object</display_name>
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>End Use Subcategory</name>
+      <name>end_use_subcategory</name>
       <display_name>End Use Subcategory</display_name>
       <type>Choice</type>
       <required>true</required>
@@ -270,24 +270,6 @@
   </attributes>
   <files>
     <file>
-      <filename>EnvelopeAndLoadTestModel_01.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>138E2AAC</checksum>
-    </file>
-    <file>
-      <filename>EnvelopeAndLoadTestModel_01_FullyCosted.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>38E06CA8</checksum>
-    </file>
-    <file>
-      <filename>ReduceElectricEquipmentLoadsByPercentage_Test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>B7EBBEBA</checksum>
-    </file>
-    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>0.10.2</identifier>
@@ -296,7 +278,31 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E0CE5510</checksum>
+      <checksum>6A529F2E</checksum>
+    </file>
+    <file>
+      <filename>test5.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>80CB1657</checksum>
+    </file>
+    <file>
+      <filename>apply_end_use_subcategory_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>37B752F5</checksum>
+    </file>
+    <file>
+      <filename>apply_end_use_subcategory_Test.rb.bak</filename>
+      <filetype>bak</filetype>
+      <usage_type>test</usage_type>
+      <checksum>216F01DD</checksum>
+    </file>
+    <file>
+      <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
+      <filetype>epw</filetype>
+      <usage_type>test</usage_type>
+      <checksum>BDF687C1</checksum>
     </file>
   </files>
 </measure>
