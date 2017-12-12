@@ -41,6 +41,21 @@ module OsLib_Reporting
     return results
   end
 
+
+  def self.table_to_csv(table_in,runner)
+    # Write the rows out to CSV
+    csv_path = File.expand_path("./LEED_#{table_in[:title]}.csv")
+    CSV.open(csv_path, "wb") do |csv_object|
+      csv_object << table_in[:header] 
+      table_in[:data].each do |row|
+        csv_object << row
+      end
+    end    
+    csv_path = File.absolute_path(csv_path)
+    runner.registerInfo("An output report section and CSV file were created for LEED MEPC #{table_in[:title]}")
+    runner.registerInfo("CSV file saved to #{csv_path}.")
+  end
+
 # -----------------------------------------------------------------------------------------------
 # LEED Report start
 
@@ -63,7 +78,6 @@ module OsLib_Reporting
     # using helper method that generates table for second example
     tables << OsLib_Reporting.general_information_general_table(model, sqlFile, runner)
     tables << OsLib_Reporting.general_information_energyModelInfo_table(model, sqlFile, runner)
-
     return @geninfo_sect
   end
 
@@ -82,9 +96,8 @@ module OsLib_Reporting
     end
 
     # using helper method that generates table for second example
-#    tables << OsLib_Reporting.schedules_EFLH_table(model, sqlFile, runner)
+    tables << OsLib_Reporting.schedules_EFLH_table(model, sqlFile, runner)
     tables << OsLib_Reporting.schedules_SetPts_table(model, sqlFile, runner)
-
     return @schedules_sect
   end
 
@@ -104,7 +117,6 @@ module OsLib_Reporting
 
     # using helper method that generates table for second example
     tables << OsLib_Reporting.opaque_assemblies_table(model, sqlFile, runner)
-
     return @opaque_sect
   end
 
@@ -125,7 +137,6 @@ module OsLib_Reporting
     # using helper method that generates table for second example
     tables << OsLib_Reporting.fene_wallGlazeArea_table(model, sqlFile, runner)
     tables << OsLib_Reporting.fene_roofSkyliteArea_table(model, sqlFile, runner)
-
     return @fene_sect
   end
 
@@ -146,7 +157,6 @@ module OsLib_Reporting
     # using helper method that generates table for second example
     tables << OsLib_Reporting.lighting_intLite_table(model, sqlFile, runner)
     tables << OsLib_Reporting.lighting_extLite_table(model, sqlFile, runner)
-
     return @lite_sect
   end
 
@@ -169,7 +179,6 @@ module OsLib_Reporting
     tables << OsLib_Reporting.process_non_receptacle_gas_table(model, sqlFile, runner)
     tables << OsLib_Reporting.process_non_receptacle_hotwater_table(model, sqlFile, runner)
     tables << OsLib_Reporting.process_non_receptacle_steam_table(model, sqlFile, runner)
-
     return @proc_sect
   end
 
@@ -189,7 +198,6 @@ module OsLib_Reporting
 
     # using helper method that generates table for second example
     tables << OsLib_Reporting.service_water_heaters_table(model, sqlFile, runner)
-
     return @swh_sect
   end
 
@@ -211,7 +219,6 @@ module OsLib_Reporting
     tables << OsLib_Reporting.air_side_hvac_unitary_cooling_coils(model, sqlFile, runner)
     tables << OsLib_Reporting.air_side_hvac_unitary_heating_coils(model, sqlFile, runner)
     tables << OsLib_Reporting.air_side_hvac_fans(model, sqlFile, runner)
-
     return @airside_sect
   end
 
@@ -258,126 +265,11 @@ module OsLib_Reporting
     tables << OsLib_Reporting.performance_energy_cost_by_type(model, sqlFile, runner)
     tables << OsLib_Reporting.performance_virtual_rate(model, sqlFile, runner)
     tables << OsLib_Reporting.performance_unmet_loads(model, sqlFile, runner)
-
     return @perf_sect
   end
 
 
 # define each table
-
-  # create template section
-  def self.experiment1_table(model, sqlFile, runner)
-    # create a second table
-    template_table = {}
-    template_table[:title] = 'Experiment Table Title'
-    template_table[:header] = ['Type', 'Based on', 'Toppings', 'Value']
-    template_table[:units] = ['', '', '', 'scoop']
-    template_table[:data] = []
-
-    # add rows to table
-    template_table[:data] << ['Vanilla', 'Vanilla', 'NA', 1.5]
-    template_table[:data] << ['Rocky Road', 'Vanilla', 'Nuts', 1.5]
-    template_table[:data] << ['Mint Chip', 'Mint', 'Chocolate Chips', 1.5]
-
-
-    # total building area
-    query = 'SELECT Value FROM tabulardatawithstrings WHERE '
-    query << "ReportName='AnnualBuildingUtilityPerformanceSummary' and "
-    query << "ReportForString='Entire Facility' and "
-    query << "TableName='End Uses' and "
-    query << "RowName='Cooling' and "
-    query << "ColumnName='Electricity' and "
-    query << "Units='GJ';"
-    query_results = sqlFile.execAndReturnFirstDouble(query)
-    if query_results.empty?
-      runner.registerWarning('Did not find value for total building area.')
-      return false
-    else
-      display = 'Heating Electricity'
-      source_units = 'GJ'
-      target_units = 'kBtu'
-      template_table[:data] << [display, query_results.get, source_units,"from SQL"]
-      value = OpenStudio.convert(query_results.get, source_units, target_units).get
-      value_neat = OpenStudio.toNeatString(value, 0, true)
-      template_table[:data] << [display, value_neat, target_units,"from SQL"]
-      runner.registerValue(display.downcase.gsub(" ","_"), value, target_units)
-    end
-    return template_table
-  end
-
-  def self.experiment1_Sect11A_table(model, sqlFile, runner)
-    # create a second table
-    template_table = {}
-    template_table[:title] = 'Section 1.1 A General Information'
-    template_table[:header] = ['Information', 'Value', 'Units']
-    template_table[:data] = []
-
-    # add rows to table
-
-    # weather file
-    query = 'SELECT Value FROM tabulardatawithstrings WHERE '
-    query << "ReportName='LEEDsummary' and "
-    query << "ReportForString='Entire Facility' and "
-    query << "TableName='Sec1.1A-General Information' and "
-    query << "RowName='Weather File' and "
-    query << "ColumnName='Data' and "
-    query << "Units='';"
-    query_results = sqlFile.execAndReturnFirstString(query)
-    if query_results.empty?
-      runner.registerWarning('Did not find value for weather file.')
-      return false
-    else
-      display = 'Weather File'
-      value = query_results.get
-      template_table[:data] << [display, value, ""]
-      runner.registerValue(display.downcase.gsub(" ","_"), value, "")
-    end
-
-    # Total gross floor area
-    query = 'SELECT Value FROM tabulardatawithstrings WHERE '
-    query << "ReportName='LEEDsummary' and "
-    query << "ReportForString='Entire Facility' and "
-    query << "TableName='Sec1.1A-General Information' and "
-    query << "RowName='Total gross floor area' and "
-    query << "ColumnName='Data' and "
-    query << "Units='m2';"
-    query_results = sqlFile.execAndReturnFirstDouble(query)
-    if query_results.empty?
-      runner.registerWarning('Did not find value for Total gross floor area.')
-      return false
-    else
-      display = 'Total gross floor area'
-      source_units = 'm^2'
-      target_units = 'ft^2'
-      value = OpenStudio.convert(query_results.get, source_units, target_units).get
-      value_neat = OpenStudio.toNeatString(value, 0, true)
-      template_table[:data] << [display, value_neat, target_units]
-      runner.registerValue(display.downcase.gsub(" ","_"), value, target_units)
-    end
-
-    # Principal Heating Source
-    query = 'SELECT Value FROM tabulardatawithstrings WHERE '
-    query << "ReportName='LEEDsummary' and "
-    query << "ReportForString='Entire Facility' and "
-    query << "TableName='Sec1.1A-General Information' and "
-    query << "RowName='Principal Heating Source' and "
-    query << "ColumnName='Data' and "
-    query << "Units='';"
-    query_results = sqlFile.execAndReturnFirstString(query)
-    if query_results.empty?
-      runner.registerWarning('Did not find value for Principal Heating Source.')
-      return false
-    else
-      display = 'Principal Heating Source'
-      value = query_results.get
-      template_table[:data] << [display, value, ""]
-      runner.registerValue(display.downcase.gsub(" ","_"), value, "")
-    end
- 
-
-    return template_table
-  end
-
 
   def self.general_information_general_table(model, sqlFile, runner)
     # create a second table
@@ -387,7 +279,6 @@ module OsLib_Reporting
     template_table[:data] = []
 
     # add rows to table
-
 
     # Conditioned building  area
     display = 'Conditioned building  area'
@@ -412,7 +303,6 @@ module OsLib_Reporting
     template_table[:data] << [display, value_neat, target_units]
     runner.registerValue(display.downcase.gsub(" ","_"), value, target_units)
 
-
     # Principal Heating Source
     query = 'SELECT Value FROM tabulardatawithstrings WHERE '
     query << "ReportName='LEEDsummary' and "
@@ -431,8 +321,7 @@ module OsLib_Reporting
       template_table[:data] << [display, value, ""]
       runner.registerValue(display.downcase.gsub(" ","_"), value, "")
     end
- 
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
     return template_table
   end
 
@@ -445,20 +334,7 @@ module OsLib_Reporting
 
     # add rows to table
 
-    # Cooling Degree Days
-#    display = 'Cooling Degree Days'
-#    template_table[:data] << [display, "TO DO", ""]
-
-    # Heating Degree Days
-#    display = 'Heating Degree Days'
-#    template_table[:data] << [display, "TO DO", ""]
-
-    # HDD and CDD data source
-#    display = 'HDD and CDD data source'
-#    template_table[:data] << [display, "TO DO", ""]
-
     # Climate Zone
-
     # add in climate zone from OpenStudio model
     # get ashrae climate zone from model
     climate_zone = ''
@@ -471,9 +347,6 @@ module OsLib_Reporting
     end
 
     template_table[:data] << ['ASHRAE Climate Zone',climate_zone]
-
-
-
 
     # weather file
     query = 'SELECT Value FROM tabulardatawithstrings WHERE '
@@ -493,22 +366,41 @@ module OsLib_Reporting
       template_table[:data] << [display, value, ""]
       runner.registerValue(display.downcase.gsub(" ","_"), value, "")
     end
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
     return template_table
   end
 
   def self.schedules_EFLH_table(model, sqlFile, runner)
-    # create a second table
+    report_name = 'LEEDsummary'
+    table_name = 'Schedules-Equivalent Full Load Hours (Schedule Type=Fraction)'
+    columns =       ['', 'Equivalent Full Load Hours of Operation Per Year']
+    columns_query = ['', 'Equivalent Full Load Hours of Operation Per Year']
+
+    # populate dynamic rows
+    rows_name_query = "SELECT DISTINCT  RowName FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}'"
+    rows = sqlFile.execAndReturnVectorOfString(rows_name_query).get
+
+    # create table
     template_table = {}
-    template_table[:title] = 'Schedules-EFLH (Schedule Type=Fraction)'
-    template_table[:header] = ['Schedule Name', 'First Object Used', 'Equivalent Full Load Hours of Operation Per Year']
+    template_table[:title] = 'Schedules - Equivalent Full Load Hours (EFLH)'
+    template_table[:header] = columns
     template_table[:data] = []
 
-    # add rows to table
-
-    template_table[:data] << ["TO DO", "TO DO", "TO DO"]
-
-    return template_table
+    # run query and populate table
+    rows.each do |row|
+      row_data = [row]
+      column_counter = -1
+      columns_query.each do |header|
+        column_counter += 1
+        next if header == ''
+        query = "SELECT Value FROM tabulardatawithstrings WHERE ReportName='#{report_name}' and TableName='#{table_name}' and RowName= '#{row}' and ColumnName= '#{header}'"
+        results = sqlFile.execAndReturnFirstString(query)
+        row_data << results
+      end
+      template_table[:data] << row_data
+    end
+    OsLib_Reporting.table_to_csv(template_table,runner)
+	return template_table
   end
 
   def self.schedules_SetPts_table(model, sqlFile, runner)
@@ -542,9 +434,8 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
-
-		return template_table
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
+	return template_table
   end
 
   def self.opaque_assemblies_table(model, sqlFile, runner)
@@ -593,11 +484,9 @@ module OsLib_Reporting
         uniqueRowCons << row_data[2]
       end
     end
-
-		return template_table
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
+	return template_table
   end
-
 
   def self.fene_wallGlazeArea_table(model, sqlFile, runner)
 
@@ -609,7 +498,7 @@ module OsLib_Reporting
     columns = ['', 'Above Ground Wall Area', 'Vertical Glazing Area', 'Above Ground Window-Wall Ratio']
     columns_query = ['','Above Ground Wall Area', 'Window Opening Area', 'Above Ground Window-Wall Ratio']
 
-		rows = ['North (315 to 45 deg)','East (45 to 135 deg)','South (135 to 225 deg)','West (225 to 315 deg)','Total']
+	rows = ['North (315 to 45 deg)','East (45 to 135 deg)','South (135 to 225 deg)','West (225 to 315 deg)','Total']
 
     # create table
     template_table = {}
@@ -640,9 +529,8 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
-
-		return template_table
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
+	return template_table
   end
 
   def self.fene_roofSkyliteArea_table(model, sqlFile, runner)
@@ -655,7 +543,7 @@ module OsLib_Reporting
     columns = ['', 'Roof Area', 'Skylight Area', 'Skylight-Roof Ratio']
     columns_query = ['','Gross Roof Area', 'Skylight Area', 'Skylight-Roof Ratio']
 
-		rows = ['Total']
+	rows = ['Total']
 
     # create table
     template_table = {}
@@ -666,7 +554,7 @@ module OsLib_Reporting
     template_table[:units] = ['', 'ft^2', 'ft^2', '']
     template_table[:data] = []
 
-		uniqueRowCons = []
+	uniqueRowCons = []
     # run query and populate table
     rows.each do |row|
       row_data = [row]
@@ -686,9 +574,8 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
-
-		return template_table
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
+	return template_table
   end
 
 
@@ -737,6 +624,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -787,6 +675,7 @@ module OsLib_Reporting
 
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -835,6 +724,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -876,6 +766,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -917,6 +808,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -958,6 +850,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -999,6 +892,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1040,6 +934,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1080,6 +975,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1100,11 +996,6 @@ module OsLib_Reporting
     template_table[:header] = columns
     template_table[:source_units] = ['', '', '', 'Pa',       'm^3/s',    'W',     'W-s/m^3',    '', ''] # used for conversation, not needed for rendering.
     template_table[:units] =        ['', '', '', 'inH_{2}O', 'ft^3/min', 'Btu/h', 'W-s/m^3',    '', '']
-
-#    template_table[:source_units] = ['', '', '', 'Pa',       'm^3/s',    'W',     'W-s/m^3',    '', ''] # used for conversation, not needed for rendering.
-#    template_table[:units] =        ['', '', '', 'inH_{2}O', 'ft^3/min', 'Btu/h', 'W-min/ft^3', '', '']
-
-
     template_table[:data] = []
 
     # run query and populate table
@@ -1126,6 +1017,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1166,6 +1058,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1206,6 +1099,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1246,6 +1140,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1286,6 +1181,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1326,6 +1222,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1405,17 +1302,12 @@ module OsLib_Reporting
       end
     end
 
-    #puts '---------------------------------'
-    #puts converted
-    #puts '---------------------------------'
-
     # create table
     template_table = {}
     template_table[:title] = 'Energy Summary by End Use'
     template_table[:header] = ['End Use','Energy Type', 'Units of Annual Energy and Peak Demand', 'Value']
     template_table[:units] =  ['', '', '', '']
     template_table[:data] = []
-    
     
     leed_row_name_map.each do |leed_row|
       leed_enduse, leed_energy_type, energyplus_rows = leed_row
@@ -1458,26 +1350,8 @@ module OsLib_Reporting
         end
       end
     end
-
-
-    # Write the rows out to CSV
-    csv_path = File.expand_path("./LEED_Performance_Output_Tab_Energy_Summary_by_End_Use.csv")
-    CSV.open(csv_path, "wb") do |csv_object|
-      csv_object << template_table[:header] 
-      template_table[:data].each do |row|
-        csv_object << row
-      end
-    end    
-    csv_path = File.absolute_path(csv_path)
-    runner.registerInfo("An output report section and CSV file were created for LEED MEPC Performance Outputs")
-    runner.registerInfo("CSV file saved to #{csv_path}.")
-    
-    #puts '---------------------------------'
-    #puts template_table
-    #puts '---------------------------------'
-
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
-    
   end
 
   def self.performance_energy_cost_by_type(model, sqlFile, runner)
@@ -1517,6 +1391,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1557,6 +1432,7 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
 
@@ -1597,9 +1473,9 @@ module OsLib_Reporting
       end
       template_table[:data] << row_data
     end
+    OsLib_Reporting.table_to_csv(template_table,runner)
 	return template_table
   end
-
 
 end #module
 

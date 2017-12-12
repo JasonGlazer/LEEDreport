@@ -42,11 +42,11 @@ OS:ShadowCalculation,
 
 OS:Site,
   {5c1f9d16-87a5-488e-aa99-a6dd668a2146}, !- Handle
-  Site 1,                                 !- Name
-  39.74,                                  !- Latitude {deg}
-  -105.18,                                !- Longitude {deg}
-  -7,                                     !- Time Zone {hr}
-  1829,                                   !- Elevation {m}
+  Chicago Ohare Intl Ap,                  !- Name
+  41.98,                                  !- Latitude {deg}
+  -87.92,                                 !- Longitude {deg}
+  -6,                                     !- Time Zone {hr}
+  201,                                    !- Elevation {m}
   ;                                       !- Terrain
 
 OS:Site:GroundTemperature:BuildingSurface,
@@ -3168,8 +3168,9 @@ OS:Output:Meter,
 
 OS:YearDescription,
   {cc25c0b7-0a9a-4a68-8068-93a13153fb44}, !- Handle
-  ,                                       !- Calendar Year
-  Sunday;                                 !- Day of Week for Start Day
+  2017,                                   !- Calendar Year
+  ,                                       !- Day of Week for Start Day
+  ;                                       !- Is Leap Year
 
 OS:RadianceParameters,
   {46c82c0e-60d3-4bad-ac61-998576d94182}, !- Handle
@@ -7523,4 +7524,42 @@ OS:Connection,
   3,                                      !- Outlet Port
   {11f6d402-d723-4dca-bf2b-4292f034cae7}, !- Target Object
   2;                                      !- Inlet Port
+
+OS:WeatherFile,
+  {ff7ffa9d-8e7a-447b-838f-59b3faa7a9a9}, !- Handle
+  Chicago Ohare Intl Ap,                  !- City
+  IL,                                     !- State Province Region
+  USA,                                    !- Country
+  TMY3,                                   !- Data Source
+  725300,                                 !- WMO Number
+  41.98,                                  !- Latitude {deg}
+  -87.92,                                 !- Longitude {deg}
+  -6,                                     !- Time Zone {hr}
+  201,                                    !- Elevation {m}
+  file:USA_IL_Chicago-OHare.Intl.AP.725300_TMY3.epw, !- Url
+  C254B53F;                               !- Checksum
+
+OS:SteamEquipment:Definition,
+  {539e23ca-9879-4aa4-aafc-81ec2911e6d5}, !- Handle
+  Steam Equipment Definition 1,           !- Name
+  EquipmentLevel,                         !- Design Level Calculation Method
+  3,                                      !- Design Level {W}
+  ,                                       !- Watts per Space Floor Area {W/m2}
+  ;                                       !- Watts per Person {W/Person}
+
+OS:SteamEquipment,
+  {3fea47cc-17d1-403a-b871-4306fec4ae14}, !- Handle
+  Steam Equipment 1,                      !- Name
+  {539e23ca-9879-4aa4-aafc-81ec2911e6d5}, !- Steam Equipment Definition Name
+  {53148cd3-f7e8-45bd-becf-46361d6848b4}, !- Space or SpaceType Name
+  {5bbe0d01-a739-4142-9e8d-e9afcebe2cf0}; !- Schedule Name
+
+OS:People:Definition,
+  {a0dcb38e-3ee7-4d6f-8a2d-f0724562833b}, !- Handle
+  People Definition 2,                    !- Name
+  People,                                 !- Number of People Calculation Method
+  0,                                      !- Number of People {people}
+  ,                                       !- People per Space Floor Area {person/m2}
+  ,                                       !- Space Floor Area per Person {m2/person}
+  0.3;                                    !- Fraction Radiant
 

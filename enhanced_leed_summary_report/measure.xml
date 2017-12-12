@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>enhanced_leed_summary_report</name>
   <uid>e11cd61d-e007-43a1-97d6-ebeeaf5d8616</uid>
-  <version_id>170ddcc6-604d-4ee0-9ff6-bd48657e6c00</version_id>
-  <version_modified>20171027T132732Z</version_modified>
+  <version_id>0454df04-e429-47d2-807b-2cad12fd18ac</version_id>
+  <version_modified>20171212T191851Z</version_modified>
   <xml_checksum>38A068DF</xml_checksum>
   <class_name>EnhancedLEEDSummaryReport</class_name>
   <display_name>Enhanced LEED Summary Report</display_name>
@@ -31,24 +31,6 @@
     <argument>
       <name>schedules_section</name>
       <display_name>Schedules Tab</display_name>
-      <type>Boolean</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>true</default_value>
-      <choices>
-        <choice>
-          <value>true</value>
-          <display_name>true</display_name>
-        </choice>
-        <choice>
-          <value>false</value>
-          <display_name>false</display_name>
-        </choice>
-      </choices>
-    </argument>
-    <argument>
-      <name>eflh_section</name>
-      <display_name>EFLH Calculator Tab</display_name>
       <type>Boolean</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -320,34 +302,10 @@
       <checksum>A6430141</checksum>
     </file>
     <file>
-      <filename>ExampleModel.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>7F9DACF4</checksum>
-    </file>
-    <file>
       <filename>report.html.erb</filename>
       <filetype>erb</filetype>
       <usage_type>resource</usage_type>
       <checksum>6AD259AE</checksum>
-    </file>
-    <file>
-      <filename>ExampleReport_Test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>630C80D9</checksum>
-    </file>
-    <file>
-      <filename>os_lib_reporting_custom.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>FD4441C7</checksum>
-    </file>
-    <file>
-      <filename>os_lib_reporting_custom.rb.bak</filename>
-      <filetype>bak</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>9C37038F</checksum>
     </file>
     <file>
       <version>
@@ -358,7 +316,43 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>DB1C63A6</checksum>
+      <checksum>2FB149E2</checksum>
+    </file>
+    <file>
+      <filename>Enhanced LEED Report OpenStudio Measure Design Doc.pdf</filename>
+      <filetype>pdf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>6E881BD7</checksum>
+    </file>
+    <file>
+      <filename>ExampleModel.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>F874465C</checksum>
+    </file>
+    <file>
+      <filename>Enhanced_LEED_Report_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>25997DFD</checksum>
+    </file>
+    <file>
+      <filename>os_lib_reporting_enhanced_leed.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>4F66793A</checksum>
+    </file>
+    <file>
+      <filename>os_lib_reporting_enhanced_leed.rb.bak</filename>
+      <filetype>bak</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>6417E945</checksum>
+    </file>
+    <file>
+      <filename>Enhanced_LEED_Report_Test.rb.bak</filename>
+      <filetype>bak</filetype>
+      <usage_type>test</usage_type>
+      <checksum>E4B376C6</checksum>
     </file>
   </files>
 </measure>

@@ -79,6 +79,7 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
 
   # method for running the test simulation using OpenStudio 2.x API
   def setup_test_2(test_name, epw_path)
+    puts "begin of setup_test_2"
 
     if !File.exist?(sql_path(test_name))
       osw_path = File.join(run_dir(test_name), 'in.osw')
@@ -94,11 +95,12 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
       puts cmd
       system(cmd)
     end
+    puts "end of setup_test_2"
   end
 
   # create test files if they do not exist when the test first runs
   def setup_test(test_name, idf_output_requests, model_in_path = model_in_path_default, epw_path = epw_path_default)
-
+    puts "begin of setup_test"
     if !File.exist?(run_dir(test_name))
       FileUtils.mkdir_p(run_dir(test_name))
     end
@@ -117,6 +119,39 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
     # convert output requests to OSM for testing, OS App and PAT will add these to the E+ Idf
     workspace = OpenStudio::Workspace.new("Draft".to_StrictnessLevel, "EnergyPlus".to_IddFileType)
     workspace.addObjects(idf_output_requests)
+
+    # add tariff to workspace for testing    
+    new_object_string = "
+      UtilityCost:Tariff,
+        Electricity Tariff,                     !- Name
+        ElectricityPurchased:Facility,          !- Output Meter Name
+        kWh,                                    !- Conversion Factor Choice
+        ,                                       !- Energy Conversion Factor
+        ,                                       !- Demand Conversion Factor
+        ,                                       !- Time of Use Period Schedule Name
+        ,                                       !- Season Schedule Name
+        ,                                       !- Month Schedule Name
+        Day,                                    !- Demand Window Length
+        0.0;                                    !- Monthly Charge or Variable Name
+        "
+    elec_tariff = workspace.addObject(OpenStudio::IdfObject::load(new_object_string).get).get
+
+    # make UtilityCost:Charge:Simple objects for electricity
+    new_object_string = "
+      UtilityCost:Charge:Simple,
+        ElectricityTariffEnergyCharge, !- Name
+        Electricity Tariff,                     !- Tariff Name
+        totalEnergy,                            !- Source Variable
+        Annual,                                 !- Season
+        EnergyCharges,                          !- Category Variable Name
+        0.12;                                   !- Cost per Unit Value or Variable Name
+        "
+    elec_utility_cost = workspace.addObject(OpenStudio::IdfObject::load(new_object_string).get).get
+    
+    puts "elec_tariff", elec_tariff
+    puts "elec_utility_cost", elec_utility_cost
+    puts "workspace", workspace
+    
     rt = OpenStudio::EnergyPlus::ReverseTranslator.new
     request_model = rt.translateWorkspace(workspace)
 
@@ -132,6 +167,7 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
     else
       setup_test_1(test_name, epw_path)
     end
+    puts "end of setup_test"
   end
 
   # assert that no section errors were thrown
@@ -162,6 +198,7 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
   end
 
   def test_good_argument_values
+    puts "begin of test_good_argument_values"
     test_name = 'test_good_argument_values'
 
     # create an instance of the measure
@@ -230,5 +267,6 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
 
     # make sure the report file exists
     assert(File.exist?(report_path(test_name)))
+    puts "end of test_good_argument_values"
   end
 end
