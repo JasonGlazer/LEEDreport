@@ -120,38 +120,6 @@ class EnhancedLEEDSummaryReport_Test < MiniTest::Unit::TestCase
     workspace = OpenStudio::Workspace.new("Draft".to_StrictnessLevel, "EnergyPlus".to_IddFileType)
     workspace.addObjects(idf_output_requests)
 
-#    # add tariff to workspace for testing    
-#    new_object_string = "
-#      UtilityCost:Tariff,
-#        Electricity Tariff,                     !- Name
-#        ElectricityPurchased:Facility,          !- Output Meter Name
-#        kWh,                                    !- Conversion Factor Choice
-#        ,                                       !- Energy Conversion Factor
-#        ,                                       !- Demand Conversion Factor
-#        ,                                       !- Time of Use Period Schedule Name
-#        ,                                       !- Season Schedule Name
-#        ,                                       !- Month Schedule Name
-#        Day,                                    !- Demand Window Length
-#        0.0;                                    !- Monthly Charge or Variable Name
-#        "
-#    elec_tariff = workspace.addObject(OpenStudio::IdfObject::load(new_object_string).get).get
-#
-#    # make UtilityCost:Charge:Simple objects for electricity
-#    new_object_string = "
-#      UtilityCost:Charge:Simple,
-#        ElectricityTariffEnergyCharge, !- Name
-#        Electricity Tariff,                     !- Tariff Name
-#        totalEnergy,                            !- Source Variable
-#        Annual,                                 !- Season
-#        EnergyCharges,                          !- Category Variable Name
-#        0.12;                                   !- Cost per Unit Value or Variable Name
-#        "
-#    elec_utility_cost = workspace.addObject(OpenStudio::IdfObject::load(new_object_string).get).get
-#    
-#    puts "elec_tariff", elec_tariff
-#    puts "elec_utility_cost", elec_utility_cost
-#    puts "workspace", workspace
-#    
     rt = OpenStudio::EnergyPlus::ReverseTranslator.new
     request_model = rt.translateWorkspace(workspace)
 
