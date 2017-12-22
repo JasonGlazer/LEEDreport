@@ -1,3 +1,10 @@
+# Enhanced LEED Summary Report Measure
+#
+# Developed by Jason Glazer of GARD Analytics, Inc.
+# Funded by U.S. Department of Energy/NREL
+#
+# https://github.com/JasonGlazer/LEEDreport
+
 require 'erb'
 require 'json'
 
