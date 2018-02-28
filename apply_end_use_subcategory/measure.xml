@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>apply_end_use_subcategory</name>
   <uid>33833705-0ae8-4d53-ab95-723f35f89d2c</uid>
-  <version_id>69b82e3c-f181-44e9-8f69-07e1c75ea8f7</version_id>
-  <version_modified>20171208T193642Z</version_modified>
+  <version_id>3a9047a9-d67d-49d7-99c7-f5d90906fdf0</version_id>
+  <version_modified>20180228T140603Z</version_modified>
   <xml_checksum>26F1AB7C</xml_checksum>
   <class_name>ApplyEndUseSubcategory</class_name>
   <display_name>Apply End-Use Subcategory</display_name>
@@ -270,6 +270,30 @@
   </attributes>
   <files>
     <file>
+      <filename>test5.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>80CB1657</checksum>
+    </file>
+    <file>
+      <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
+      <filetype>epw</filetype>
+      <usage_type>test</usage_type>
+      <checksum>BDF687C1</checksum>
+    </file>
+    <file>
+      <filename>apply_end_use_subcategory_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>6AFA7920</checksum>
+    </file>
+    <file>
+      <filename>End-Use Subcategory OpenStudio Measure Design Doc-rev01.pdf</filename>
+      <filetype>pdf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>3992A9AE</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>0.10.2</identifier>
@@ -278,31 +302,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>6A529F2E</checksum>
-    </file>
-    <file>
-      <filename>test5.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>80CB1657</checksum>
-    </file>
-    <file>
-      <filename>apply_end_use_subcategory_Test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>37B752F5</checksum>
-    </file>
-    <file>
-      <filename>apply_end_use_subcategory_Test.rb.bak</filename>
-      <filetype>bak</filetype>
-      <usage_type>test</usage_type>
-      <checksum>216F01DD</checksum>
-    </file>
-    <file>
-      <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
-      <filetype>epw</filetype>
-      <usage_type>test</usage_type>
-      <checksum>BDF687C1</checksum>
+      <checksum>3A9D0203</checksum>
     </file>
   </files>
 </measure>
