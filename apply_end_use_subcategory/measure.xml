@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>apply_end_use_subcategory</name>
   <uid>33833705-0ae8-4d53-ab95-723f35f89d2c</uid>
-  <version_id>3a9047a9-d67d-49d7-99c7-f5d90906fdf0</version_id>
-  <version_modified>20180228T140603Z</version_modified>
+  <version_id>a77c3953-9370-4b44-a76c-f9f939d8eeb0</version_id>
+  <version_modified>20180308T171008Z</version_modified>
   <xml_checksum>26F1AB7C</xml_checksum>
   <class_name>ApplyEndUseSubcategory</class_name>
   <display_name>Apply End-Use Subcategory</display_name>
@@ -302,7 +302,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>3A9D0203</checksum>
+      <checksum>28BE8C83</checksum>
     </file>
   </files>
 </measure>

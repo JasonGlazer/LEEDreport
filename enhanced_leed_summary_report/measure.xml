@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>enhanced_leed_summary_report</name>
   <uid>e11cd61d-e007-43a1-97d6-ebeeaf5d8616</uid>
-  <version_id>fdf431c5-6788-4bac-85b0-c6bd6d0f8023</version_id>
-  <version_modified>20180228T140604Z</version_modified>
+  <version_id>7f6a7241-a192-4aef-a877-9eeb07f5d793</version_id>
+  <version_modified>20180308T171008Z</version_modified>
   <xml_checksum>38A068DF</xml_checksum>
   <class_name>EnhancedLEEDSummaryReport</class_name>
   <display_name>Enhanced LEED Summary Report</display_name>
@@ -346,7 +346,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>43D91C10</checksum>
+      <checksum>6024CDC1</checksum>
     </file>
   </files>
 </measure>
